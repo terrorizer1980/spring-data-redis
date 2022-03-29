@@ -17,7 +17,6 @@ package org.springframework.data.redis.connection.jedis;
 
 import static org.assertj.core.api.Assertions.*;
 
-import org.junit.jupiter.api.Test;
 import redis.clients.jedis.params.GetExParams;
 import redis.clients.jedis.params.SetParams;
 
@@ -29,14 +28,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.junit.jupiter.api.Test;
+
+import org.springframework.data.domain.Range;
 import org.springframework.data.redis.connection.RedisServer;
 import org.springframework.data.redis.connection.RedisStringCommands.SetOption;
-import org.springframework.data.redis.connection.RedisZSetCommands.Range;
 import org.springframework.data.redis.core.types.Expiration;
 import org.springframework.data.redis.core.types.RedisClientInfo;
 
 /**
+ * Unit tests for {@link JedisConverters}.
+ *
  * @author Christoph Strobl
+ * @author Mark Paluch
  */
 class JedisConvertersUnitTests {
 
@@ -112,44 +116,36 @@ class JedisConvertersUnitTests {
 
 		byte[] defaultValue = "tyrion".getBytes();
 
-		assertThat(JedisConverters.boundaryToBytesForZRangeByLex(Range.unbounded().getMax(), defaultValue))
+		assertThat(JedisConverters.boundaryToBytesForZRangeByLex(Range.Bound.unbounded(), defaultValue))
 				.isEqualTo(defaultValue);
 	}
 
 	@Test // DATAREDIS-378
 	void boundaryToBytesForZRangeByLexShouldReturnValueCorrectlyWhenBoundaryIsIncluing() {
 
-		assertThat(
-				JedisConverters.boundaryToBytesForZRangeByLex(Range.range().gte(JedisConverters.toBytes("a")).getMin(), null))
-						.isEqualTo(JedisConverters.toBytes("[a"));
+		assertThat(JedisConverters.boundaryToBytesForZRangeByLex(Range.Bound.inclusive(JedisConverters.toBytes("a")), null))
+				.isEqualTo(JedisConverters.toBytes("[a"));
 	}
 
 	@Test // DATAREDIS-378
 	void boundaryToBytesForZRangeByLexShouldReturnValueCorrectlyWhenBoundaryIsExcluding() {
 
-		assertThat(
-				JedisConverters.boundaryToBytesForZRangeByLex(Range.range().gt(JedisConverters.toBytes("a")).getMin(), null))
-						.isEqualTo(JedisConverters.toBytes("(a"));
+		assertThat(JedisConverters.boundaryToBytesForZRangeByLex(Range.Bound.exclusive(JedisConverters.toBytes("a")), null))
+				.isEqualTo(JedisConverters.toBytes("(a"));
 	}
 
 	@Test // DATAREDIS-378
 	void boundaryToBytesForZRangeByLexShouldReturnValueCorrectlyWhenBoundaryIsAString() {
 
-		assertThat(JedisConverters.boundaryToBytesForZRangeByLex(Range.range().gt("a").getMin(), null))
+		assertThat(JedisConverters.boundaryToBytesForZRangeByLex(Range.Bound.exclusive(JedisConverters.toBytes("a")), null))
 				.isEqualTo(JedisConverters.toBytes("(a"));
 	}
 
 	@Test // DATAREDIS-378
 	void boundaryToBytesForZRangeByLexShouldReturnValueCorrectlyWhenBoundaryIsANumber() {
 
-		assertThat(JedisConverters.boundaryToBytesForZRangeByLex(Range.range().gt(1L).getMin(), null))
+		assertThat(JedisConverters.boundaryToBytesForZRangeByLex(Range.Bound.exclusive(JedisConverters.toBytes("1")), null))
 				.isEqualTo(JedisConverters.toBytes("(1"));
-	}
-
-	@Test // DATAREDIS-378
-	void boundaryToBytesForZRangeByLexShouldThrowExceptionWhenBoundaryHoldsUnknownType() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> JedisConverters.boundaryToBytesForZRangeByLex(Range.range().gt(new Date()).getMin(), null));
 	}
 
 	@Test // DATAREDIS-352
@@ -165,42 +161,42 @@ class JedisConvertersUnitTests {
 
 		byte[] defaultValue = "tyrion".getBytes();
 
-		assertThat(JedisConverters.boundaryToBytesForZRange(Range.unbounded().getMax(), defaultValue))
-				.isEqualTo(defaultValue);
+		assertThat(JedisConverters.boundaryToBytesForZRange(Range.Bound.unbounded(), defaultValue)).isEqualTo(defaultValue);
 	}
 
 	@Test // DATAREDIS-352
 	void boundaryToBytesForZRangeByShouldReturnValueCorrectlyWhenBoundaryIsIncluing() {
 
-		assertThat(JedisConverters.boundaryToBytesForZRange(Range.range().gte(JedisConverters.toBytes("a")).getMin(), null))
+		assertThat(JedisConverters.boundaryToBytesForZRange(Range.Bound.inclusive(JedisConverters.toBytes("a")), null))
 				.isEqualTo(JedisConverters.toBytes("a"));
 	}
 
 	@Test // DATAREDIS-352
 	void boundaryToBytesForZRangeByShouldReturnValueCorrectlyWhenBoundaryIsExcluding() {
 
-		assertThat(JedisConverters.boundaryToBytesForZRange(Range.range().gt(JedisConverters.toBytes("a")).getMin(), null))
+		assertThat(JedisConverters.boundaryToBytesForZRange(Range.Bound.exclusive(JedisConverters.toBytes("a")), null))
 				.isEqualTo(JedisConverters.toBytes("(a"));
 	}
 
 	@Test // DATAREDIS-352
 	void boundaryToBytesForZRangeByShouldReturnValueCorrectlyWhenBoundaryIsAString() {
 
-		assertThat(JedisConverters.boundaryToBytesForZRange(Range.range().gt("a").getMin(), null))
+		assertThat(JedisConverters.boundaryToBytesForZRange(Range.Bound.exclusive("a"), null))
 				.isEqualTo(JedisConverters.toBytes("(a"));
 	}
 
 	@Test // DATAREDIS-352
 	void boundaryToBytesForZRangeByShouldReturnValueCorrectlyWhenBoundaryIsANumber() {
 
-		assertThat(JedisConverters.boundaryToBytesForZRange(Range.range().gt(1L).getMin(), null))
-				.isEqualTo(JedisConverters.toBytes("(1"));
+		assertThat(
+				JedisConverters.boundaryToBytesForZRange(org.springframework.data.domain.Range.Bound.exclusive(1L), null))
+						.isEqualTo(JedisConverters.toBytes("(1"));
 	}
 
 	@Test // DATAREDIS-352
 	void boundaryToBytesForZRangeByShouldThrowExceptionWhenBoundaryHoldsUnknownType() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> JedisConverters.boundaryToBytesForZRange(Range.range().gt(new Date()).getMin(), null));
+				.isThrownBy(() -> JedisConverters.boundaryToBytesForZRange(Range.Bound.exclusive(new Date()), null));
 	}
 
 	@Test // DATAREDIS-316, DATAREDIS-749
@@ -217,16 +213,14 @@ class JedisConvertersUnitTests {
 	void convertsExpirationToSetPXAT() {
 
 		assertThat(JedisConverters.toSetCommandExPxArgument(Expiration.unixTimestamp(10, TimeUnit.MILLISECONDS)))
-				.extracting(SetParams::toString)
-				.isEqualTo(SetParams.setParams().pxAt(10).toString());
+				.extracting(SetParams::toString).isEqualTo(SetParams.setParams().pxAt(10).toString());
 	}
 
 	@Test // GH-2050
 	void convertsExpirationToSetEXAT() {
 
 		assertThat(JedisConverters.toSetCommandExPxArgument(Expiration.unixTimestamp(1, TimeUnit.MINUTES)))
-				.extracting(SetParams::toString)
-				.isEqualTo(SetParams.setParams().exAt(60).toString());
+				.extracting(SetParams::toString).isEqualTo(SetParams.setParams().exAt(60).toString());
 	}
 
 	@Test // DATAREDIS-316, DATAREDIS-749
@@ -247,24 +241,21 @@ class JedisConvertersUnitTests {
 	@Test // GH-2050
 	void convertsExpirationToGetExEX() {
 
-		assertThat(JedisConverters.toGetExParams(Expiration.seconds(10)))
-				.extracting(GetExParams::toString)
+		assertThat(JedisConverters.toGetExParams(Expiration.seconds(10))).extracting(GetExParams::toString)
 				.isEqualTo(new GetExParams().ex(10).toString());
 	}
 
 	@Test // GH-2050
 	void convertsExpirationWithTimeUnitToGetExEX() {
 
-		assertThat(JedisConverters.toGetExParams(Expiration.from(1, TimeUnit.MINUTES)))
-				.extracting(GetExParams::toString)
+		assertThat(JedisConverters.toGetExParams(Expiration.from(1, TimeUnit.MINUTES))).extracting(GetExParams::toString)
 				.isEqualTo(new GetExParams().ex(60).toString());
 	}
 
 	@Test // GH-2050
 	void convertsExpirationToGetExPEX() {
 
-		assertThat(JedisConverters.toGetExParams(Expiration.milliseconds(10)))
-				.extracting(GetExParams::toString)
+		assertThat(JedisConverters.toGetExParams(Expiration.milliseconds(10))).extracting(GetExParams::toString)
 				.isEqualTo(new GetExParams().px(10).toString());
 	}
 
@@ -272,24 +263,21 @@ class JedisConvertersUnitTests {
 	void convertsExpirationToGetExEXAT() {
 
 		assertThat(JedisConverters.toGetExParams(Expiration.unixTimestamp(10, TimeUnit.SECONDS)))
-				.extracting(GetExParams::toString)
-				.isEqualTo(new GetExParams().exAt(10).toString());
+				.extracting(GetExParams::toString).isEqualTo(new GetExParams().exAt(10).toString());
 	}
 
 	@Test // GH-2050
 	void convertsExpirationWithTimeUnitToGetExEXAT() {
 
 		assertThat(JedisConverters.toGetExParams(Expiration.unixTimestamp(1, TimeUnit.MINUTES)))
-				.extracting(GetExParams::toString)
-				.isEqualTo(new GetExParams().exAt(60).toString());
+				.extracting(GetExParams::toString).isEqualTo(new GetExParams().exAt(60).toString());
 	}
 
 	@Test // GH-2050
 	void convertsExpirationToGetExPXAT() {
 
 		assertThat(JedisConverters.toGetExParams(Expiration.unixTimestamp(10, TimeUnit.MILLISECONDS)))
-				.extracting(GetExParams::toString)
-				.isEqualTo(new GetExParams().pxAt(10).toString());
+				.extracting(GetExParams::toString).isEqualTo(new GetExParams().pxAt(10).toString());
 	}
 
 	private void verifyRedisServerInfo(RedisServer server, Map<String, String> values) {

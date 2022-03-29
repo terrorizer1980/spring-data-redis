@@ -163,7 +163,7 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Set<Tuple> zRangeByScoreWithScores(byte[] key, Range range,
+	public Set<Tuple> zRangeByScoreWithScores(byte[] key, org.springframework.data.domain.Range<Number> range,
 			org.springframework.data.redis.connection.Limit limit) {
 
 		Assert.notNull(key, "Key must not be null!");
@@ -201,7 +201,8 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Set<byte[]> zRevRangeByScore(byte[] key, Range range, org.springframework.data.redis.connection.Limit limit) {
+	public Set<byte[]> zRevRangeByScore(byte[] key, org.springframework.data.domain.Range<Number> range,
+			org.springframework.data.redis.connection.Limit limit) {
 
 		Assert.notNull(key, "Key must not be null!");
 		Assert.notNull(range, "Range for ZREVRANGEBYSCORE must not be null!");
@@ -220,7 +221,7 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Set<Tuple> zRevRangeByScoreWithScores(byte[] key, Range range,
+	public Set<Tuple> zRevRangeByScoreWithScores(byte[] key, org.springframework.data.domain.Range<Number> range,
 			org.springframework.data.redis.connection.Limit limit) {
 
 		Assert.notNull(key, "Key must not be null!");
@@ -240,7 +241,7 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Long zCount(byte[] key, Range range) {
+	public Long zCount(byte[] key, org.springframework.data.domain.Range<Number> range) {
 
 		Assert.notNull(key, "Key must not be null!");
 
@@ -249,7 +250,7 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Long zLexCount(byte[] key, Range range) {
+	public Long zLexCount(byte[] key, org.springframework.data.domain.Range<byte[]> range) {
 
 		Assert.notNull(key, "Key must not be null!");
 		Assert.notNull(range, "Range must not be null!");
@@ -369,7 +370,7 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Long zRemRangeByLex(byte[] key, Range range) {
+	public Long zRemRangeByLex(byte[] key, org.springframework.data.domain.Range<byte[]> range) {
 
 		Assert.notNull(key, "Key must not be null!");
 		Assert.notNull(range, "Range must not be null for ZREMRANGEBYLEX!");
@@ -379,7 +380,7 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Long zRemRangeByScore(byte[] key, Range range) {
+	public Long zRemRangeByScore(byte[] key, org.springframework.data.domain.Range<Number> range) {
 
 		Assert.notNull(key, "Key must not be null!");
 		Assert.notNull(range, "Range for ZREMRANGEBYSCORE must not be null!");
@@ -588,7 +589,8 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Set<byte[]> zRangeByScore(byte[] key, Range range, org.springframework.data.redis.connection.Limit limit) {
+	public Set<byte[]> zRangeByScore(byte[] key, org.springframework.data.domain.Range<Number> range,
+			org.springframework.data.redis.connection.Limit limit) {
 
 		Assert.notNull(key, "Key must not be null!");
 		Assert.notNull(range, "Range for ZRANGEBYSCORE must not be null!");
@@ -604,7 +606,8 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Set<byte[]> zRangeByLex(byte[] key, Range range, org.springframework.data.redis.connection.Limit limit) {
+	public Set<byte[]> zRangeByLex(byte[] key, org.springframework.data.domain.Range<byte[]> range,
+			org.springframework.data.redis.connection.Limit limit) {
 
 		Assert.notNull(key, "Key must not be null!");
 		Assert.notNull(range, "Range for ZRANGEBYLEX must not be null!");
@@ -621,7 +624,8 @@ class LettuceZSetCommands implements RedisZSetCommands {
 	}
 
 	@Override
-	public Set<byte[]> zRevRangeByLex(byte[] key, Range range, org.springframework.data.redis.connection.Limit limit) {
+	public Set<byte[]> zRevRangeByLex(byte[] key, org.springframework.data.domain.Range<byte[]> range,
+			org.springframework.data.redis.connection.Limit limit) {
 
 		Assert.notNull(key, "Key must not be null!");
 		Assert.notNull(range, "Range for ZREVRANGEBYLEX must not be null!");
